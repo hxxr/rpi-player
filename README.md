@@ -57,7 +57,7 @@ make clean
 ```
 ## Wiring Setup
 The diagram below shows how it is possible to set up 4 GPIO pins for use with this program to simultaneously control one piezo buzzer or speaker (requires 1 passive speaker/buzzer, 1 9V battery, 4 NPN BJTs, 8 10 ohm resistors, 4 LEDs, although the LEDs may be omitted). The VOICE wires represent GPIO pins, while GND is one of the Raspberry Pi's ground pins.
-![The wiring setup!](https://lh4.googleusercontent.com/6RPrdMaM-4ezGS07RqT5nanuvD0QWYlyeNoIwslMNUj7HQ0BMKcsYtx1OyHmp0IXeoTeOG-uFlE9BRY1i9dF=w1440-h757)
+![The wiring setup!](http://oi68.tinypic.com/f52k45.jpg)
 \
 \
 \
@@ -230,20 +230,24 @@ misc_t mc = {
 ```
 The above template shows all of the effects off. Below is a rigorous explanation of the effect of each field within the `misc_t`:
 1. `(double)`  Length of note in beats. This must be more than 0 and less than or equal to 1. For the note to play for the entire duration of the beat set this to 1, otherwise set this to a number of lesser value.
+\
 ...
 2. `(char)` 1 if pitch slide effect is to be used, otherwise 0.
 3. `(double)` If pitch slide is to be used, desired ending frequency for the pitch slide. The starting frequency of the pitch slide is read from the frequency array.
 4. `(double)` If pitch slide is to be used, amount of beats before the pitch slide starts. This must be less than 1. If this value is not 0 the pitch slide will start somewhere in the middle of the beat rather than at the very beginning.
 5. `(double)` If pitch slide is to be used, amount of beats before the pitch slide ends. This must be more than the fourth value (the amount of beats before the pitch slide starts).
+\
 ...
 6. `(char)` 1 if duty cycle slide effect is to be used, otherwise 0.
 7. `(double)` If duty cycle slide is to be used, desired ending duty cycle for the duty cycle slide. The starting duty cycle of the duty cycle slide is read from the duty cycle array.
 8. `(double)` If duty cycle slide is to be used, amount of beats before the duty cycle slide starts. This must be less than 1. If this value is not 0 the duty cycle slide will start somewhere in the middle of the beat rather than at the very beginning.
 9. `(double)` If duty cycle slide is to be used, amount of beats before the duty cycle slide ends. This must be more than the fourth value (the amount of beats before the duty cycle slide starts).
+\
 ...
 10.  `(char)` 1 if vibrato settings are to be modified, otherwise 0.
 11. `(double)` If vibrato settings are to be modified, vibrato range, in cents (hundredths of a semitone). The pitch of the note will be offset (at maximum) by this many cents by the vibrato.
 12. `(unsigned int)` If vibrato settings are to be modified, length of each vibrato pulse, in microseconds.
+\
 ...
 13.  `(char)` 1 if tremolo settings are to be modified, otherwise 0.
 14. `(double)` If tremolo settings are to be modified, tremolo range, in the ordinary 0-1 units. The duty cycle of the note will be offset (at maximum) by this many units by the tremolo.
