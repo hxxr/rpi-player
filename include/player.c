@@ -13,7 +13,7 @@
 
 
 /* Type returned by waveGen, containing useful information about how it went  */
-typedef struct waveGen_info_t {
+typedef struct wavegen_info_t {
     /* Length of generated waveform in transitions.
        Also half the length in control blocks.  */
     unsigned int length;
@@ -37,7 +37,7 @@ typedef struct waveGen_info_t {
        properly without any "pop" sound  */
     char w_on;
 
-} waveGen_info_t;
+} wavegen_info_t;
 
 /* Type for wave transitions. Waves are arrays of these transitions.  */
 typedef struct pulse_t {
@@ -67,7 +67,7 @@ static double  *(_duty[32]);
 static misc_t **(_misc[32]);
 
 static unsigned int pins;
-static waveGen_info_t _info[32];
+static wavegen_info_t _info[32];
 
 static unsigned int *cmdV, *cmdB, cmdH;
 static pulse_t wIn1[PAGES*64];
@@ -185,7 +185,7 @@ static double tremolo(double base, double intensity, double width, double us) {
    w_offset:    Microseconds to add to beginning before wave starts.
    w_on:        1 if wave starts on, 0 if wave starts off.
                 Offset starts opposite. */
-static waveGen_info_t waveGen(int pin,
+static wavegen_info_t waveGen(int pin,
                            double freqS,
                            double freqE,
                          unsigned freqDelayS,
@@ -223,7 +223,7 @@ static waveGen_info_t waveGen(int pin,
     /* Microseconds waveform spends off after a transition from ON to OFF  */
     unsigned int micros_off;
     /* Return value of this function  */
-    waveGen_info_t info;
+    wavegen_info_t info;
 
     /* These are used later in the wave combination phase, but they are defined
        here in order to conform to standards  */
