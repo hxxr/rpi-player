@@ -757,12 +757,12 @@ void queuePlay(unsigned int us, unsigned int beats) {
                     pin,                             /*       int pin         */
                     freqFrom[pin],                   /*    double freqS       */
                     freqTo[pin],                     /*    double freqE       */
-                    freqRS[pin],                     /*  unsigned freqDelayS  */
-                    freqRE[pin],                     /*  unsigned freqDelayE  */
+                    dmin(us, freqRS[pin]),           /*  unsigned freqDelayS  */
+                    dmin(us, freqRE[pin]),           /*  unsigned freqDelayE  */
                     dutyFrom[pin],                   /*    double dutyS       */
                     dutyTo[pin],                     /*    double dutyE       */
-                    dutyRS[pin],                     /*  unsigned dutyDelayS  */
-                    dutyRE[pin],                     /*  unsigned dutyDelayE  */
+                    dmin(us, dutyRS[pin]),           /*  unsigned dutyDelayS  */
+                    dmin(us, dutyRE[pin]),           /*  unsigned dutyDelayE  */
                     vIntensity[pin],                 /*    double vIntensity  */
                     vWidth[pin],                     /*  unsigned vWidth      */
                     tIntensity[pin],                 /*    double tIntensity  */
