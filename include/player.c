@@ -605,6 +605,7 @@ void queuePlay(unsigned int us, unsigned int beats) {
     static double tIntensity[32], _tIntensity[32];
     static unsigned int vWidth[32], _vWidth[32];
     static unsigned int tWidth[32], _tWidth[32];
+    static unsigned int changeUs = 0;
 
     /* Setup DMA, allocate pages for control blocks  */
     regtool_setup(PAGES);
@@ -628,6 +629,11 @@ void queuePlay(unsigned int us, unsigned int beats) {
 
     /* This loops through each beat. Generates one waveform per beat.  */
     for (beat = 0; beat < beats; beat++) {
+        /* Change global beat length if it was requested  */
+        if (changeUs) {
+            us = changeUs;
+            changeUs = 0;
+        }
         /* This loops through each pin. Run waveGen() once for each pin
            in order to produce one combined waveform on several pins.  */
         for (_pins = pins, pin = 0; pin < 32; _pins >>= 1, pin++) {
@@ -749,6 +755,10 @@ void queuePlay(unsigned int us, unsigned int beats) {
                     tIntensity[pin] = _tIntensity[pin];
                     tWidth[pin]     = _tWidth[pin];
                 }
+                /* If the us property is non-zero, change the global beat length
+                   next beat  */
+                if (ifc&&_misc[pin][beat]->us)
+                    changeUs = _misc[pin][beat]->us;
 
                 /* Set GPIO pin mode to output  */
                 gpio_mode(pin, OUT);

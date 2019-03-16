@@ -29,6 +29,8 @@ typedef struct misc_t {
     char usingT;   /* Whether we are modifying tremolo settings.              */
     double tInt;   /* If modifying, tremolo range.                            */
     unsigned tWth; /* If modifying, length of tremolo pulse in microseconds.  */
+
+    unsigned us;   /* If non-zero, global beat length is changed next beat.   */
 } misc_t;
 
 

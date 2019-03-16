@@ -1,8 +1,9 @@
 
+
 # rpi-player
 
 ### Description
-A collection of programs written in C that demonstrate the playing of music (PWM waves) through a passive piezo buzzer (or passive speaker) through the Raspberry Pi's GPIO pins.
+A collection of programs written in C that demonstrate the playing of music (PWM waves) through a passive piezo buzzer (or passive speaker) using the Raspberry Pi's GPIO pins.
 
 Also includes two examples of interacting with the Raspberry Pi's DMA engine using regtool.c.
 
@@ -14,6 +15,7 @@ Also includes two examples of interacting with the Raspberry Pi's DMA engine usi
 * Much improved sound quality and tuning over software-timed PWM programs such as [the Imperial March buzzer example from here](https://www.youtube.com/watch?v=j8HnKM58QXk)
 * Support for frequency ramps and duty cycle ramps (i.e. "pitch slide" and "timbre slide")
 * Support for vibrato and tremolo effects
+* Support for speed change mid-playthrough
 
 ## Programs Included
 **ex-helloworld.c** - Example using regtool.c showing how to copy text from one part of the memory to another part of the memory using DMA engine.
@@ -26,18 +28,18 @@ There will be more programs (actual music) and videos within the next few months
 
 ## Installation
 Ensure that you have installed the programs git, gcc and make. They are most likely installed by default, but just to be sure:
-```
+```bash
 sudo apt-get update
 sudo apt-get install git gcc make
 ```
 Now download this repository:
-```
+```bash
 cd
 git clone https://github.com/hxxr/rpi-player.git
 cd rpi-player
 ```
 To compile the programs you must run the correct command based on the hardware revision of your Raspberry Pi:
-```
+```bash
 make pi0    # Raspberry Pi Zero or Zero W
 make pi1    # Raspberry Pi 1
 make pi2    # Raspberry Pi 2
@@ -46,18 +48,18 @@ make pi3    # Raspberry Pi 3
 **Please note: I only have a Raspberry Pi 2, so I cannot guarantee the programs will function on the other hardware revisions. However I have reason to believe they will function.**
 
 The programs are now compiled and can be run like any other program. However they must be run using sudo. For example:
-```
+```bash
 sudo ./ex-player
 ```
 \
 \
 Later, in case you want to remove the compiled files you may run this command from inside of your copy of the repository:
-```
+```bash
 make clean
 ```
 ## Wiring Setup
 The diagram below shows how it is possible to set up 4 GPIO pins for use with this program to simultaneously control one piezo buzzer or speaker (requires 1 passive speaker/buzzer, 1 9V battery, 4 NPN BJTs, 8 10 ohm resistors, 4 LEDs, although the LEDs may be omitted). The VOICE wires represent GPIO pins, while GND is one of the Raspberry Pi's ground pins.
-![The wiring setup!](http://oi68.tinypic.com/f52k45.jpg)
+![The wiring setup!](http://oi66.tinypic.com/28vvsj4.jpg)
 \
 \
 \
@@ -183,11 +185,11 @@ The program is now complete. To compile this program:
 * Save the code above into a new file named "test.c".
 * Move the file into the root directory of the downloaded version of this repository (by default at `~/rpi-player/`).
 * `cd` into the root directory of the downloaded version of this repository (by default at `~/rpi-player/`).
-    ```
+    ```bash
     cd ~/rpi-player/    # Or wherever it is...
     ```
 * Compile by running `make` again, choosing the correct command for your hardware revision. This project's Makefile is designed to detect the presence of new C source files and accomodate for them.
-    ```
+    ```bash
     make pi0    # Raspberry Pi Zero or Zero W
     make pi1    # Raspberry Pi 1
     make pi2    # Raspberry Pi 2
@@ -202,6 +204,7 @@ The following miscellaneous effects are supported:
 * Vibrato (oscillating pitch slide)
 * Tremolo (oscillating duty cycle slide)
 * Staccato (shortened note duration)
+* Tempo change (speed change)
 
 \
 A `misc_t` effect can be created using the following code template:
@@ -225,7 +228,9 @@ misc_t mc = {
 
     0,      /* Whether we are modifying tremolo settings.                     */
     0,      /* If modifying, tremolo range.                                   */
-    0       /* If modifying, length of tremolo pulse in microseconds.         */
+    0,      /* If modifying, length of tremolo pulse in microseconds.         */
+
+    0       /* If non-zero, global beat length is changed next beat.          */
 };
 ```
 The above template shows all of the effects off. Below is a rigorous explanation of the effect of each field within the `misc_t`:
@@ -252,6 +257,9 @@ The above template shows all of the effects off. Below is a rigorous explanation
 13.  `(char)` 1 if tremolo settings are to be modified, otherwise 0.
 14. `(double)` If tremolo settings are to be modified, tremolo range, in the ordinary 0-1 units. The duty cycle of the note will be offset (at maximum) by this many units by the tremolo.
 15. `(unsigned int)` If tremolo settings are to be modified, length of each tremolo pulse, in microseconds.
+\
+...
+16. `(unsigned int)` If this value is non-zero, the global beat length (in microseconds) will be changed to this value on the next beat. If this value is zero the global beat length will not be changed.
 
 Afterwards you must define (in addition to the frequency and duty cycle arrays) an additional array for each pin, this time of type `misc_t *`. Each element of the array is a pointer to a `misc_t`, or `NULL` if no effects are to be used for that beat. The player.h header file defines "___" as NULL.
 ```c
@@ -291,11 +299,13 @@ misc_t mc = {
 
     0,      /* Whether we are modifying tremolo settings.                     */
     0,      /* If modifying, tremolo range.                                   */
-    0       /* If modifying, length of tremolo pulse in microseconds.         */
+    0,      /* If modifying, length of tremolo pulse in microseconds.         */
+
+    0       /* If non-zero, global beat length is changed next beat.          */
 };
 
-double freq1[]  =  {c4, XX, XX, XX, XX, XX, XX, XX};
-double duty1[]  =  {.5, .5, .5, .5, .5, .5, .5, .5};
+double  freq1[] =  {c4, XX, XX, XX, XX, XX, XX, XX};
+double  duty1[] =  {.5, .5, .5, .5, .5, .5, .5, .5};
 misc_t *misc1[] = {&mc,___,___,___,___,___,___,___};
 
 int main(void) {
