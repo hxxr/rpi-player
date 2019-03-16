@@ -73,7 +73,7 @@ The diagram below shows how it is possible to set up 4 GPIO pins for use with th
 
 ### Basic Usage
 player.c contains two functions, `queueAdd()` which loads notes to the player queue, and `queuePlay()` which plays whatever has been loaded into the queue. They are declared as such inside of player.h:
-```
+```c
 /* Add a voice to the queue.
    pin:    GPIO pin number (BCM) through which the voice plays.
    freqs:  Array of frequencies (Hz). A zero (0) indicates pin should be off.
@@ -87,13 +87,13 @@ void queueAdd(int pin, double *freqs, double *duties, misc_t **misc);
 void queuePlay(unsigned int us, unsigned int beats);
 ```
 A program using these two functions must include player.h:
-```
+```c
 #include "include/player.h"
 
 /* ...  */
 ```
 To define notes to be played, you need to create an array of type `double` for each GPIO pin you want to use. Each element of the array is the frequency (Hz) for that beat. If you do not want anything to be played in that beat, set it to 0. The frequency arrays for each pin need to be the same length. This is an example of a frequency array for 4 GPIO pins:
-```
+```c
 #include "include/player.h"
 
 double freq1[] = {c4, d4, e4, f4, g4, g4, g4};
@@ -106,7 +106,7 @@ double freq4[] = {g4, a4, b4, c5, d5, d5, d5};
 The frequencies of musical notes are defined inside of player.h. To produce a natural note use lowercase letters (for example the frequency of C natural in octave 4 is "c4"). To produce sharps use uppercase letters (for example the frequency of C sharp in octave 4 is "C4"). The player.h header file also defines "__" as 0, so you may use it to fill in areas where the pin is to be off.
 \
 You also need to define another array of type `double` for each pin that contains the duty cycles for each beat. The duty cycle is the percentage of the time the sound wave spends on. It controls the timbre (tone colour) of the sound. It varies between 0 and 1 (exclusive) where 0 is off all the time and 1 is on all the time. As such setting the duty cycle to 0.5 creates a square wave. Lowering the duty cycle appears to have the same effect (acoustically) as raising the duty cycle, it causes the sound to become more similar to a triangle or sawtooth wave.
-```
+```c
 #include "include/player.h"
 
 double freq1[] = {c4, d4, e4, f4, g4, g4, g4};
@@ -122,11 +122,11 @@ double duty4[] = {.5, .5, .5, .5, .5, .5, .2};
 /* ...  */
 ```
 Now in the `main()` function you must run `queueAdd()` several times, once for each pin. This is the declaration of `queueAdd()`:
-```
+```c
 void queueAdd(int pin, double *freqs, double *duties, misc_t **misc);
 ```
 The first argument is the pin number (BCM). The second argument is the frequency array for that pin. The third argument is the duty cycle array for that pin. The fourth argument is an array containing miscellaneous effects (pitch slide, vibrato, etc...) which may be (and will be in this example) set to NULL if unused. NULL is defined inside of player.h if it is not defined elsewhere.
-```
+```c
 #include "include/player.h"
 
 double freq1[] = {c4, d4, e4, f4, g4, g4, g4};
@@ -151,11 +151,11 @@ int main(void) {
 }
 ```
 Finally, run `queuePlay()` inside of `main()` in order to play the data stored in the queue. The declaration of `queuePlay()` is as such:
-```
+```c
 void queuePlay(unsigned int us, unsigned int beats);
 ```
 The first argument is the length of each beat in microseconds, which may be calculated using the BPM by dividing 60000000 (sixty million) by the BPM. The second argument is the total number of beats, which is the length of any of the frequency or duty cycle arrays.
-```
+```c
 #include "include/player.h"
 
 double freq1[] = {c4, d4, e4, f4, g4, g4, g4};
@@ -205,7 +205,7 @@ The following miscellaneous effects are supported:
 
 \
 A `misc_t` effect can be created using the following code template:
-```
+```c
 misc_t mc = {
     1,      /* Length of note, in beats. (<= 1)                               */
 
@@ -254,11 +254,11 @@ The above template shows all of the effects off. Below is a rigorous explanation
 15. `(unsigned int)` If tremolo settings are to be modified, length of each tremolo pulse, in microseconds.
 
 Afterwards you must define (in addition to the frequency and duty cycle arrays) an additional array for each pin, this time of type `misc_t *`. Each element of the array is a pointer to a `misc_t`, or `NULL` if no effects are to be used for that beat. The player.h header file defines "___" as NULL.
-```
+```c
 misc_t *misc1[] = {&mc,___,___,___,___,___,___};
 ```
 This array must then be added to the queue with the frequency and duty cycle arrays for that pin.
-```
+```c
 /* ...  */
 
 int main(void) {
@@ -269,7 +269,7 @@ int main(void) {
 ```
 
 Below is an example program that plays a pitch slide from c4 to c5 on GPIO 21 over 8 beats ("XX" is defined in player.h as 0, which I will use as a placeholder for beats where a pitch slide or duty cycle slide occurs):
-```
+```c
 #include "include/player.h"
 
 misc_t mc = {
