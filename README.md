@@ -25,10 +25,10 @@ Also includes two examples of interacting with the Raspberry Pi's DMA engine usi
 There will be more programs (actual music) and videos within the next few months.
 
 ## Installation
-Ensure that you have installed the programs gcc and make. They are most likely installed by default, but just to be sure:
+Ensure that you have installed the programs git, gcc and make. They are most likely installed by default, but just to be sure:
 ```
 sudo apt-get update
-sudo apt-get install gcc make
+sudo apt-get install git gcc make
 ```
 Now download this repository:
 ```
