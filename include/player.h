@@ -72,6 +72,10 @@ void queueAdd(int pin, double *freqs, double *duties, misc_t **misc);
    beats: Total number of queued beats.  */
 void queuePlay(unsigned int us, unsigned int beats);
 
+/* Set DMA channel to use. You can use channel 0, 4, 5 or 6. Default 5.
+   Run this before queuePlay().  */
+void set_dmach(int dmach);
+
 
 
 

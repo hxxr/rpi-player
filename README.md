@@ -1,8 +1,6 @@
-
-
 # rpi-player
 
-### Description
+## Description
 A collection of programs written in C that demonstrate the playing of music (PWM waves) through a passive piezo buzzer (or passive speaker) using the Raspberry Pi's GPIO pins.
 
 Also includes two examples of interacting with the Raspberry Pi's DMA engine using regtool.c.
@@ -69,12 +67,12 @@ The diagram below shows how it is possible to set up 4 GPIO pins for use with th
 \
 \
 \
-.
+...
 ## How to Write a Program
 **C programs written by the user which use player.c or regtool.c should be placed inside the root directory of this repository. To compile them simply run `make` again. The Makefile automatically scans for new C source files.**
 
 ### Basic Usage
-player.c contains two functions, `queueAdd()` which loads notes to the player queue, and `queuePlay()` which plays whatever has been loaded into the queue. They are declared as such inside of player.h:
+player.c contains two basic functions, `queueAdd()` which loads notes to the player queue, and `queuePlay()` which plays whatever has been loaded into the queue. They are declared as such inside of player.h:
 ```c
 /* Add a voice to the queue.
    pin:    GPIO pin number (BCM) through which the voice plays.
@@ -106,6 +104,7 @@ double freq4[] = {g4, a4, b4, c5, d5, d5, d5};
 /* ...  */
 ```
 The frequencies of musical notes are defined inside of player.h. To produce a natural note use lowercase letters (for example the frequency of C natural in octave 4 is "c4"). To produce sharps use uppercase letters (for example the frequency of C sharp in octave 4 is "C4"). The player.h header file also defines "__" as 0, so you may use it to fill in areas where the pin is to be off.
+
 \
 You also need to define another array of type `double` for each pin that contains the duty cycles for each beat. The duty cycle is the percentage of the time the sound wave spends on. It controls the timbre (tone colour) of the sound. It varies between 0 and 1 (exclusive) where 0 is off all the time and 1 is on all the time. As such setting the duty cycle to 0.5 creates a square wave. Lowering the duty cycle appears to have the same effect (acoustically) as raising the duty cycle, it causes the sound to become more similar to a triangle or sawtooth wave.
 ```c
@@ -314,3 +313,28 @@ int main(void) {
     return 0;
 }
 ```
+### Addendum 2: Changing DMA channel
+player.c uses DMA to produce PWM waveforms. By default the DMA channel to use is set to channel 5, however this may be changed.
+
+\
+player.h exposes a function from regtool.c for changing the DMA channel:
+```c
+/* Set DMA channel to use. You can use channel 0, 4, 5 or 6. Default 5.
+   Run this before queuePlay().  */
+void set_dmach(int dmach);
+```
+To use it simply call the function with the desired DMA channel as its argument sometime before running `queuePlay()`:
+```c
+#include "include/player.h"
+
+/* ...  */
+
+int main(void) {
+    set_dmach(4);
+
+    queueAdd(21, freq1, duty1, misc1);
+    queuePlay(1000000, 8);
+    return 0;
+}
+```
+Remember that you should only set the DMA channel to 0, 4, 5 or 6. Out of these only channels 4 and 5 are guaranteed to be unused by the system.
