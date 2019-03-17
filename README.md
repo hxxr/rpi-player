@@ -1,4 +1,14 @@
 # rpi-player
+#### Table of Contents
+* [Description](#description)
+* [Highlights](#highlights)
+* [Programs Included](#programs-included)
+* [Installation](#installation)
+* [Wiring Setup](#wiring-setup)
+* [How to Write a Program](#how-to-write-a-program)
+  * [Basic Usage](#basic-usage)
+  * [Addendum 1: Usage of miscellaneous effects (pitch slide, vibrato, etc...)](#addendum-1-usage-of-miscellaneous-effects-pitch-slide-vibrato-etc)
+  * [Addendum 2: Changing DMA channel](#addendum-2-changing-dma-channel)
 
 ## Description
 A collection of programs written in C that demonstrate the playing of music (PWM waves) through a passive piezo buzzer (or passive speaker) using the Raspberry Pi's GPIO pins.
