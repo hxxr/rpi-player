@@ -1,4 +1,4 @@
-CFLAGS = -std=c89 -fdiagnostics-color=always -pedantic -g -Wall -Werror
+CFLAGS = -std=c89 -fdiagnostics-color=always -pedantic -g -Wall
 LDLIBS = -lm
 all default:
 	$(info Usage:)
