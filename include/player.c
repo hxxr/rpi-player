@@ -522,7 +522,7 @@ static void waveTransmit(void) {
             /* Increment dma_laps if current DMA index < previous DMA index
                (because it means DMA went back to first control block)  */
             if (dmaRunning) dma_last = dma_current_cb();
-            usleep(1000);
+            usleep(2500);
             if (dma_current_cb() < dma_last) dma_laps++;
         }
 
@@ -546,7 +546,7 @@ static void waveTransmit(void) {
             /* Increment dma_laps if current DMA index < previous DMA index
                (because it means DMA went back to first control block)  */
             if (dmaRunning) dma_last = dma_current_cb();
-            usleep(1000);
+            usleep(2500);
             if (dma_current_cb() < dma_last) dma_laps++;
         }
 
