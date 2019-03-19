@@ -18,7 +18,7 @@
  * ***** END GPL LICENSE BLOCK *****
  */
 
-/* regtool - Register Tool - Functions for controlling RPi peripherals  */
+/* driver - Functions for controlling RPi peripherals and DMA engine  */
 
 #define _BSD_SOURCE
 
@@ -30,7 +30,7 @@
 #include <string.h>    /* memset()                                            */
 #include <sys/ioctl.h> /* ioctl(), _IOWR()                                    */
 
-#include "regtool.h"
+#include "driver.h"
 
 
 
@@ -176,7 +176,7 @@ static void *memory_map(unsigned int base, unsigned int pages) {
     int fd = open("/dev/mem", O_RDWR | O_SYNC);
     if (fd < 0) {
         fprintf(stderr,
-        "ERROR: regtool_setup(): Cannot open /dev/mem. Try using sudo.\n");
+        "ERROR: driver_setup(): Cannot open /dev/mem. Try using sudo.\n");
         exit(1);
     }
 
@@ -306,7 +306,7 @@ int gpio_read(int pin) {
 
 
 /* Set DMA channel to use. You can use channel 0, 4, 5 or 6. Default 5.
-   Run this before regtool_setup().  */
+   Run this before driver_setup().  */
 void set_dmach(int dmach) {
     dch = dmach;
 }
@@ -357,7 +357,7 @@ void activate_dma(unsigned int index) {
 /*############################################################################*/
 
 
-/* Stop DMA. This is called automatically with regtool_cleanup().  */
+/* Stop DMA. This is called automatically with driver_cleanup().  */
 void stop_dma(void) {
     dma_reg[DMACH(dch) + DMA_CS] = DMA_CS_RESET;
 }
@@ -402,7 +402,7 @@ unsigned int periph(unsigned int base, unsigned int offset) {
              Set this to 0 if you are not planning to use DMA.
              A reminder that one page is 4096 bytes.
              Try not to allocate more than 4096 pages (16 MiB) of memory.  */
-void regtool_setup(unsigned int dmaPages) {
+void driver_setup(unsigned int dmaPages) {
     /* Map certain parts of the Raspberry Pi's memory to virtual memory.  */
     dma_reg   = (unsigned int *)memory_map(DMA_BASE,  1);
     pwm_reg   = (unsigned int *)memory_map(PWM_BASE,  1);
@@ -486,7 +486,7 @@ void regtool_setup(unsigned int dmaPages) {
 
 
 /* Cleanup. Run at end.  */
-void regtool_cleanup(void) {
+void driver_cleanup(void) {
     if (cbs_pages) {
         /* Stop DMA  */
         stop_dma();

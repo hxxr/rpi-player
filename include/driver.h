@@ -18,7 +18,7 @@
  * ***** END GPL LICENSE BLOCK *****
  */
 
-/* regtool - Register Tool - Functions for controlling RPi peripherals  */
+/* driver - Functions for controlling RPi peripherals and DMA engine  */
 
 #pragma once
 
@@ -162,10 +162,10 @@ extern cb_t *cbs_v, *cbs_b;
              Set this to 0 if you are not planning to use DMA.
              A reminder that one page is 4096 bytes.
              Try not to allocate more than 4096 pages (16 MiB) of memory.  */
-void regtool_setup(unsigned int dmaPages);
+void driver_setup(unsigned int dmaPages);
 
 /* Cleanup. Run at end.  */
-void regtool_cleanup(void);
+void driver_cleanup(void);
 
 /* Set pin mode to IN (0) or OUT (1).  */
 /* You can also set to  */
@@ -211,7 +211,7 @@ unsigned int vc_create(void **virtAddr, void **busAddr, unsigned int pages);
 void vc_destroy(unsigned int handle, void *virtAddr, unsigned int pages);
 
 /* Set DMA channel to use. You can use channel 0, 4, 5 or 6. Default 5.
-   Run this before regtool_setup().  */
+   Run this before driver_setup().  */
 void set_dmach(int dmach);
 
 /* Get maximum length (in bytes) of cbs_v.  */
@@ -221,7 +221,7 @@ unsigned int cbs_len(void);
    index: The index of the first DMA control block to load from cbs_v.  */
 void activate_dma(unsigned int index);
 
-/* Stop DMA. This is called automatically with regtool_cleanup().  */
+/* Stop DMA. This is called automatically with driver_cleanup().  */
 void stop_dma(void);
 
 /* Returns 1 if DMA is active, otherwise returns 0.  */

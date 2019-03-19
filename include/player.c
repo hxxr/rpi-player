@@ -26,7 +26,7 @@
 #include <unistd.h>  /* usleep()                                              */
 #include <math.h>    /* pow()                                                 */
 
-#include "regtool.h"
+#include "driver.h"
 #include "player.h"
 
 
@@ -628,7 +628,7 @@ void queuePlay(unsigned int us, unsigned int beats) {
     static unsigned int changeUs = 0;
 
     /* Setup DMA, allocate pages for control blocks  */
-    regtool_setup(PAGES);
+    driver_setup(PAGES);
 
     /* Make pages for DMA to receive GPIO commands from  */
     cmdH = vc_create((void **)&cmdV, (void **)&cmdB, PAGES);
@@ -833,7 +833,7 @@ void queuePlay(unsigned int us, unsigned int beats) {
 
     /* Free resources  */
     vc_destroy(cmdH, cmdV, PAGES);
-    regtool_cleanup();
+    driver_cleanup();
 }
 
 

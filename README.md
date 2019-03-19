@@ -13,7 +13,7 @@
 ## Description
 A collection of programs written in C that demonstrate the playing of music (PWM waves) through a passive piezo buzzer (or passive speaker) using the Raspberry Pi's GPIO pins.
 
-Also includes two examples of interacting with the Raspberry Pi's DMA engine using regtool.c.
+Also includes two examples of interacting with the Raspberry Pi's DMA engine using driver.c.
 
 ## Highlights
 * Hardware-timed playing through any of the GPIO pins on the 40-pin header
@@ -26,9 +26,9 @@ Also includes two examples of interacting with the Raspberry Pi's DMA engine usi
 * Support for speed change mid-playthrough
 
 ## Programs Included
-**ex-helloworld.c** - Example using regtool.c showing how to copy text from one part of the memory to another part of the memory using DMA engine.
+**ex-helloworld.c** - Example using driver.c showing how to copy text from one part of the memory to another part of the memory using DMA engine.
 
-**ex-wave.c** - Example using regtool.c showing production of square wave on a GPIO pin using DMA engine. By default the square wave is produced on **GPIO 21 at 440 Hz**, however this may be changed inside the file (near the top).
+**ex-wave.c** - Example using driver.c showing production of square wave on a GPIO pin using DMA engine. By default the square wave is produced on **GPIO 21 at 440 Hz**, however this may be changed inside the file (near the top).
 
 **ex-player.c** - Very simple example using the player.c library to play chords through 4 GPIO pins simultaneously. By default it plays through **GPIO 21, 20, 16, 13**, but this may be changed inside the file.
 
@@ -79,7 +79,7 @@ The diagram below shows how it is possible to set up 4 GPIO pins for use with th
 \
 ...
 ## How to Write a Program
-**C programs written by the user which use player.c or regtool.c should be placed inside the root directory of this repository. To compile them simply run `make` again. The Makefile automatically scans for new C source files.**
+**C programs written by the user which use player.c or driver.c should be placed inside the root directory of this repository. To compile them simply run `make` again. The Makefile automatically scans for new C source files.**
 
 ### Basic Usage
 player.c contains two basic functions, `queueAdd()` which loads notes to the player queue, and `queuePlay()` which plays whatever has been loaded into the queue. They are declared as such inside of player.h:
@@ -327,7 +327,7 @@ int main(void) {
 player.c uses DMA to produce PWM waveforms. By default the DMA channel to use is set to channel 5, however this may be changed.
 
 \
-player.h exposes a function from regtool.c for changing the DMA channel:
+player.h exposes a function from driver.c for changing the DMA channel:
 ```c
 /* Set DMA channel to use. You can use channel 0, 4, 5 or 6. Default 5.
    Run this before queuePlay().  */

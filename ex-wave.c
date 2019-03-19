@@ -1,6 +1,6 @@
 #include <stdio.h>    /* printf(), fgets(), stdin                             */
 
-#include "include/regtool.h"
+#include "include/driver.h"
 
 
 
@@ -20,7 +20,7 @@ int main(void) {
     int usDelay;
 
     /* Setup DMA, allocate 1 page for control blocks  */
-    regtool_setup(1);
+    driver_setup(1);
 
     /* Make 1 page for DMA to receive GPIO commands from  */
     cmdH = vc_create((void **)&cmdV, (void **)&cmdB, 1);
@@ -95,7 +95,7 @@ int main(void) {
 
     /* Free resources  */
     vc_destroy(cmdH, cmdV, 1);
-    regtool_cleanup();
+    driver_cleanup();
 
     return 0;
 }

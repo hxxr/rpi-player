@@ -1,7 +1,7 @@
 #include <stdio.h>    /* printf()                                             */
 #include <string.h>   /* strncpy()                                            */
 
-#include "include/regtool.h"
+#include "include/driver.h"
 
 /* String to copy  */
 #define STR    "Hello, World!"
@@ -14,7 +14,7 @@ int main(void) {
     unsigned int cbsLen;
 
     /* Setup DMA, allocate 1 page for control blocks  */
-    regtool_setup(1);
+    driver_setup(1);
 
     /* Allocate 1 page for each of source array and destination array  */
     srcArrayH  = vc_create((void **)&srcArrayV,  (void **)&srcArrayB,  1);
@@ -45,7 +45,7 @@ int main(void) {
     /* Free resources  */
     vc_destroy(srcArrayH,  srcArrayV,  1);
     vc_destroy(destArrayH, destArrayV, 1);
-    regtool_cleanup();
+    driver_cleanup();
 
     return 0;
 }
