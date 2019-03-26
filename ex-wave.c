@@ -10,6 +10,9 @@
 /* Frequency (Hz)  */
 #define FREQ 440.00
 
+/* Duty cycle (between 0 and 1, exclusive)  */
+#define DUTY 0.5
+
 
 /* Virtual and bus address of GPIO command buffer  */
 unsigned int *cmdV, *cmdB, cmdH;
@@ -17,7 +20,7 @@ unsigned int *cmdV, *cmdB, cmdH;
 int main(void) {
     unsigned int cbsLen;
     char str[5];
-    int usDelay;
+    int usDelay, onDelay, offDelay;
 
     /* Setup DMA, allocate 1 page for control blocks  */
     driver_setup(1);
@@ -25,13 +28,18 @@ int main(void) {
     /* Make 1 page for DMA to receive GPIO commands from  */
     cmdH = vc_create((void **)&cmdV, (void **)&cmdB, 1);
 
-    usDelay = 500000/FREQ; /* Delay (microseconds) for on/off transitions */
+    usDelay  = 500000/FREQ;  /* Average delay (microseconds) for transitions */
+    onDelay  = usDelay*DUTY*2;    /* Delay for on transitions   */
+    offDelay = usDelay*2-onDelay; /* Delay for off transitions  */
     cmdV[0] = 1<<PIN;
 
     cbsLen = cbs_len()/sizeof(cb_t);
     printf("\nMaximum amount of control blocks allowed: %u\n\n", cbsLen);
 
-    printf("Playing on GPIO %u at %g Hz.\n\n", PIN, (double)FREQ);
+    printf("Playing on GPIO %u at %g Hz with %g%% duty cycle.\n\n",
+        PIN,
+        (double)FREQ,
+        (double)DUTY*100);
 
     /* Set GPIO pin mode to output  */
     gpio_mode(PIN, OUT);
@@ -47,7 +55,7 @@ int main(void) {
     cbs_v[0].nextconbk  =  (unsigned int)&cbs_b[1];     /* Next:   cbs_v[1]   */
 
     /* Delay1
-       Copy usDelay 32-bit integers (4 bytes per 32-bit integer) from
+       Copy onDelay 32-bit integers (4 bytes per 32-bit integer) from
        a dummy location (cmdV[0]) to the PWM FIFO.
        We set up the clock so that each 32-bit integer written to the FIFO
        causes exactly 1 microsecond of delay.
@@ -55,7 +63,7 @@ int main(void) {
     cbs_v[1].ti = TIBASE | CB_DEST_DREQ | CB_PERMAP(5); /* Sync with PWM FIFO */
     cbs_v[1].source_ad  =  (unsigned int)&cmdB[0];      /* Src:    cmdV[0]    */
     cbs_v[1].dest_ad    =  periph(PWM_BASE, PWM_FIF1);  /* Dest:   PWM_FIF1   */
-    cbs_v[1].txfr_len   =  4 * usDelay;                 /* Length: 4*usDelay  */
+    cbs_v[1].txfr_len   =  4 * onDelay;                 /* Length: 4*onDelay  */
     cbs_v[1].nextconbk  =  (unsigned int)&cbs_b[2];     /* Next:   cbs_v[2]   */
 
     /* Off
@@ -69,7 +77,7 @@ int main(void) {
     cbs_v[2].nextconbk  =  (unsigned int)&cbs_b[3];     /* Next:   cbs_v[3]   */
 
     /* Delay2
-       Copy usDelay 32-bit integers (4 bytes per) from
+       Copy offDelay 32-bit integers (4 bytes per) from
        a dummy location (cmdV[0]) to the PWM FIFO.
        We set up the clock so that each 32-bit integer written to the FIFO
        causes exactly 1 microsecond of delay.
@@ -77,7 +85,7 @@ int main(void) {
     cbs_v[3].ti = TIBASE | CB_DEST_DREQ | CB_PERMAP(5); /* Sync with PWM FIFO */
     cbs_v[3].source_ad  =  (unsigned int)&cmdB[0];      /* Src:    cmdV[0]    */
     cbs_v[3].dest_ad    =  periph(PWM_BASE, PWM_FIF1);  /* Dest:   PWM_FIF1   */
-    cbs_v[3].txfr_len   =  4 * usDelay;                 /* Length: 4*usDelay  */
+    cbs_v[3].txfr_len   =  4 * offDelay;                /* Length: 4*offDelay */
     cbs_v[3].nextconbk  =  (unsigned int)&cbs_b[0];     /* Next:   cbs_v[0]   */
 
     /* Begin DMA copy operation with control block at index 0  */

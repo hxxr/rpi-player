@@ -28,7 +28,7 @@ Also includes two examples of interacting with the Raspberry Pi's DMA engine usi
 ## Programs Included
 **ex-helloworld.c** - Example using driver.c showing how to copy text from one part of the memory to another part of the memory using DMA engine.
 
-**ex-wave.c** - Example using driver.c showing production of square wave on a GPIO pin using DMA engine. By default the square wave is produced on **GPIO 21 at 440 Hz**, however this may be changed inside the file (near the top).
+**ex-wave.c** - Example using driver.c showing production of square wave or PWM wave on a GPIO pin using DMA engine. By default the wave is produced on **GPIO 21 at 440 Hz with 50% duty cycle**, however this may be changed inside the file (near the top).
 
 **ex-player.c** - Very simple example using the player.c library to play chords through 4 GPIO pins simultaneously. By default it plays through **GPIO 21, 20, 16, 13**, but this may be changed inside the file.
 
