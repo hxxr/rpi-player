@@ -20,19 +20,21 @@ Also includes two examples of interacting with the Raspberry Pi's DMA engine usi
 * Hardware-timed playing through several GPIO pins simultaneously (and thus the ability to produce simultaneous tones)
 * Any frequency from 0-20000 Hz (including non-integer frequencies)
 * Ability to change timbre of sound by changing duty cycle
-* Much improved sound quality and tuning over software-timed PWM programs such as [the Imperial March buzzer example from here](https://www.youtube.com/watch?v=j8HnKM58QXk)
+* Much improved sound quality and tuning over software-timed PWM programs such as [**the Imperial March buzzer example from here**](https://www.youtube.com/watch?v=j8HnKM58QXk)
 * Support for frequency ramps and duty cycle ramps (i.e. "pitch slide" and "timbre slide")
 * Support for vibrato and tremolo effects
 * Support for speed change mid-playthrough
 
 ## Programs Included
-**ex-helloworld.c** - Example using driver.c showing how to copy text from one part of the memory to another part of the memory using DMA engine.
+[**ex-helloworld.c**](ex-helloworld.c) - Example using driver.c showing how to copy text from one part of the memory to another part of the memory using DMA engine.
 
-**ex-wave.c** - Example using driver.c showing production of square wave or PWM wave on a GPIO pin using DMA engine. By default the wave is produced on **GPIO 21 at 440 Hz with 50% duty cycle**, however this may be changed inside the file (near the top).
+[**ex-wave.c**](ex-wave.c) - Example using driver.c showing production of square wave or PWM wave on a GPIO pin using DMA engine. By default the wave is produced on **GPIO 21 at 440 Hz with 50% duty cycle**, however this may be changed inside the file (near the top).
 
-**ex-player.c** - Very simple example using the player.c library to play chords through 4 GPIO pins simultaneously. By default it plays through **GPIO 21, 20, 16, 13**, but this may be changed inside the file.
+[**ex-player.c**](ex-player.c) - Very simple example using the player.c library to play chords through **4 GPIO pins** simultaneously. By default it plays through **GPIO 21, 20, 16, 13**, but this may be changed inside the file (near the top).
 
-There will be more programs (actual music) and videos within the next few months.
+[**kingspipes.c**](kingspipes.c) - An alto saxophone trio by Donald E. Matthews. One flat in original pitch, four after transposition to concert. Requires **3 GPIO pins**. By default it plays through **GPIO 21, 20, 16**, but this may be changed inside the file (near the top).
+
+There will be more programs and videos within the next few months.
 
 ## Installation
 Ensure that you have installed the programs git, gcc and make. They are most likely installed by default, but just to be sure:
