@@ -257,7 +257,7 @@ The above template shows all of the effects off. Below is a rigorous explanation
 6. `(char)` 1 if duty cycle slide effect is to be used, otherwise 0.
 7. `(double)` If duty cycle slide is to be used, desired ending duty cycle for the duty cycle slide. The starting duty cycle of the duty cycle slide is read from the duty cycle array.
 8. `(double)` If duty cycle slide is to be used, amount of beats before the duty cycle slide starts. This must be less than 1. If this value is not 0 the duty cycle slide will start somewhere in the middle of the beat rather than at the very beginning.
-9. `(double)` If duty cycle slide is to be used, amount of beats before the duty cycle slide ends. This must be more than the fourth value (the amount of beats before the duty cycle slide starts).
+9. `(double)` If duty cycle slide is to be used, amount of beats before the duty cycle slide ends. This must be more than the eighth value (the amount of beats before the duty cycle slide starts).
 \
 ...
 10.  `(char)` 1 if vibrato settings are to be modified, otherwise 0.
