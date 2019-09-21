@@ -69,7 +69,7 @@ make clean
 ```
 ## Wiring Setup
 The diagram below shows how it is possible to set up 4 GPIO pins for use with this program to simultaneously control one piezo buzzer or speaker (requires 1 passive speaker/buzzer, 1 9V battery, 4 NPN BJTs, 8 10 ohm resistors, 4 LEDs, although the LEDs may be omitted). The VOICE wires represent GPIO pins, while GND is one of the Raspberry Pi's ground pins.
-![The wiring setup!](http://oi66.tinypic.com/28vvsj4.jpg)
+![The wiring setup!](https://lh3.googleusercontent.com/fQvhcrAmZMhctooSvip67fKNLHhQOHmXltqXGgqKIj6vCeHXgHlmUK0xtCTvD_kafOwN_vEBZIhO1eaD0w6-BsSFXobXjePIxwMcMwU_5Z4aTrbUvLAx9x7PYOTm-NPyX4E376nunw=w2400)
 \
 \
 \
