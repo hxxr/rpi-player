@@ -25,7 +25,7 @@ $(SRC:.c=): % : $(INCLUDES) $(addsuffix .o,$(basename %))
 	@printf "     include/driver.o \033[1;37m+\033[1;36m include/player.o"
 	@printf " \033[1;37m+\033[1;36m $(word 3,$^) \033[1;33m->\033[1;32m"
 	@printf " $@\033[1;33m]\033[0m\n"
-	gcc $(DEFINES) $(CFLAGS) $(LDLIBS) $(INCLUDES) $(word 3,$^) -o $@
+	gcc $(DEFINES) $(CFLAGS) $(INCLUDES) $(word 3,$^) -o $@ $(LDLIBS)
 	@echo
 %.o : %.c
 	@printf "\033[1;33m[\033[1;31mCOMPILING\033[1;34m"
