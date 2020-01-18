@@ -90,19 +90,19 @@ player.c contains two basic functions, `queueAdd()` which loads notes to the pla
    pin:    GPIO pin number (BCM) through which the voice plays.
    freqs:  Array of frequencies (Hz). A zero (0) indicates pin should be off.
    duties: Array of duty cycles (0 to 1, exclusive).
-   misc:   Array of misc_t pointers containing extra data. This may be NULL.  */
+   misc:   Array of misc_t pointers containing extra data. This may be NULL. */
 void queueAdd(int pin, double *freqs, double *duties, misc_t **misc);
 
 /* Play queue. This function also consumes the queue.
    us:    Length of each beat in microseconds (60000000/BPM).
-   beats: Total number of queued beats.  */
+   beats: Total number of queued beats. */
 void queuePlay(unsigned int us, unsigned int beats);
 ```
 A program using these two functions must include player.h:
 ```c
 #include "include/player.h"
 
-/* ...  */
+/* ... */
 ```
 To define notes to be played, you need to create an array of type `double` for each GPIO pin you want to use. Each element of the array is the frequency (Hz) for that beat. If you do not want anything to be played in that beat, set it to 0. The frequency arrays for each pin need to be the same length. This is an example of a frequency array for 4 GPIO pins:
 ```c
@@ -113,7 +113,7 @@ double freq2[] = {c5, g4, g4, a4, b4, b4, b4};
 double freq3[] = {g3, a3, b3, c4, d4, d4, d4};
 double freq4[] = {g4, a4, b4, c5, d5, d5, d5};
 
-/* ...  */
+/* ... */
 ```
 The frequencies of musical notes are defined inside of player.h. To produce a natural note use lowercase letters (for example the frequency of C natural in octave 4 is "c4"). To produce sharps use uppercase letters (for example the frequency of C sharp in octave 4 is "C4"). The player.h header file also defines "__" as 0, so you may use it to fill in areas where the pin is to be off.
 
@@ -132,7 +132,7 @@ double duty2[] = {.5, .5, .5, .5, .5, .5, .2};
 double duty3[] = {.5, .5, .5, .5, .5, .5, .2};
 double duty4[] = {.5, .5, .5, .5, .5, .5, .2};
 
-/* ...  */
+/* ... */
 ```
 Now in the `main()` function you must run `queueAdd()` several times, once for each pin. This is the declaration of `queueAdd()`:
 ```c
@@ -158,7 +158,7 @@ int main(void) {
     queueAdd(16, freq3, duty3, NULL);
     queueAdd(13, freq4, duty4, NULL);
 
-    /* ...  */
+    /* ... */
 
     return 0;
 }
@@ -278,7 +278,7 @@ misc_t *misc1[] = {&mc,___,___,___,___,___,___};
 ```
 This array must then be added to the queue with the frequency and duty cycle arrays for that pin.
 ```c
-/* ...  */
+/* ... */
 
 int main(void) {
     queueAdd(21, freq1, duty1, misc1);
@@ -332,14 +332,14 @@ player.c uses DMA to produce PWM waveforms. By default the DMA channel to use is
 player.h exposes a function from driver.c for changing the DMA channel:
 ```c
 /* Set DMA channel to use. You can use channel 0, 4, 5 or 6. Default 5.
-   Run this before queuePlay().  */
+   Run this before queuePlay(). */
 void set_dmach(int dmach);
 ```
 To use it simply call the function with the desired DMA channel as its argument sometime before running `queuePlay()`:
 ```c
 #include "include/player.h"
 
-/* ...  */
+/* ... */
 
 int main(void) {
     set_dmach(4);

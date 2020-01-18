@@ -18,7 +18,7 @@
  * ***** END GPL LICENSE BLOCK *****
  */
 
-/* driver - Functions for controlling RPi peripherals and DMA engine  */
+/* driver - Functions for controlling RPi peripherals and DMA engine */
 
 #define _BSD_SOURCE
 
@@ -36,25 +36,25 @@
 
 
 /* DMA channel to use.
-   Only channels 0, 4, 5 and 6 are available for use.  */
+   Only channels 0, 4, 5 and 6 are available for use. */
 static unsigned int dch = 5;
 
 /* These pointers provide access to the part of the memory that contains
-   DMA control blocks.  */
+   DMA control blocks. */
 cb_t *cbs_v, *cbs_b;
 
-/* This is used to free the memory for the DMA control blocks later.  */
+/* This is used to free the memory for the DMA control blocks later. */
 static unsigned int dmah;
 
-/* Length of cbs_v in pages (1 page = 128 control blocks = 4096 bytes).  */
+/* Length of cbs_v in pages (1 page = 128 control blocks = 4096 bytes). */
 static unsigned int cbs_pages;
 
 /* These pointers provide access to the parts of the memory that
-   control the GPIO pins and other hardware peripherals.  */
-static volatile unsigned int *gpio_reg;  /* GPIO Register           */
-static volatile unsigned int *dma_reg;   /* DMA Register            */
-static volatile unsigned int *pwm_reg;   /* PWM Register            */
-static volatile unsigned int *cm_reg;    /* Clock Manager Register  */
+   control the GPIO pins and other hardware peripherals. */
+static volatile unsigned int *gpio_reg;  /* GPIO Register          */
+static volatile unsigned int *dma_reg;   /* DMA Register           */
+static volatile unsigned int *pwm_reg;   /* PWM Register           */
+static volatile unsigned int *cm_reg;    /* Clock Manager Register */
 
 /* Each register corresponds to
    a specific memory location in the Raspberry Pi's memory.
@@ -67,7 +67,7 @@ static volatile unsigned int *cm_reg;    /* Clock Manager Register  */
 
    The CM (clock manager) register is undocumented. Info on it is here:
    https://www.scribd.com/doc/127599939/BCM2835-Audio-clocks
-   It's only 3 pages long. Look through all of it.  */
+   It's only 3 pages long. Look through all of it. */
 
 
 /*############################################################################*/
@@ -167,12 +167,12 @@ static void mailbox_unmapmem(void *addr, unsigned int size) {
 
 /* Map a part of the system memory to virtual memory so that it can be modified.
    base: Memory address of first byte to map
-   pages: Amount of pages to map (1 page = 4096 bytes)  */
+   pages: Amount of pages to map (1 page = 4096 bytes) */
 static void *memory_map(unsigned int base, unsigned int pages) {
     void *mem;
 
-    /* Attempt to open the device file "/dev/mem".  */
-    /* This file provides access to Raspberry Pi's physical memory.  */
+    /* Attempt to open the device file "/dev/mem". */
+    /* This file provides access to Raspberry Pi's physical memory. */
     int fd = open("/dev/mem", O_RDWR | O_SYNC);
     if (fd < 0) {
         fprintf(stderr,
@@ -180,11 +180,11 @@ static void *memory_map(unsigned int base, unsigned int pages) {
         exit(1);
     }
 
-    /* Now, attempt to map.  */
+    /* Now, attempt to map. */
     mem = mmap(NULL, 4096*pages, PROT_READ|PROT_WRITE,
                      MAP_SHARED, fd, base);
 
-    /* Close file and return the virtual memory location.  */
+    /* Close file and return the virtual memory location. */
     close(fd);
     return mem;
 }
@@ -213,7 +213,7 @@ unsigned int vc_create(void **virtAddr, void **busAddr, unsigned int pages) {
     unsigned int bus_addr = mailbox_lock(fd, handle);
     void *virt_addr = mailbox_mapmem(bus_addr & ~0xC0000000, size);
     mailbox_close(fd);
-    memset(virt_addr, 0, size); /* Zero fill  */
+    memset(virt_addr, 0, size); /* Zero fill */
     *virtAddr = virt_addr;
     *busAddr  = (void *)bus_addr;
     return handle;
@@ -248,19 +248,19 @@ void vc_destroy(unsigned int handle, void *virtAddr, unsigned int pages) {
 
 /* Set pin mode to IN (0) or OUT (1).
    You can also set to
-   ALT0 (4), ALT1 (5), ALT2 (6), ALT3 (7), ALT4 (3) or ALT5 (2).  */
+   ALT0 (4), ALT1 (5), ALT2 (6), ALT3 (7), ALT4 (3) or ALT5 (2). */
 void gpio_mode(int pin, int mode) {
     /* Record the 32-bit integer from GPIO_FSEL in the
-       GPIO register that contains the pin's state  */
+       GPIO register that contains the pin's state */
     unsigned int fsel = gpio_reg[GPIO_FSEL + pin/10];
 
-    /* Replace the pin's corresponding three bits with the desired mode:  */
-    /* Set all of the three bits to 0 first, using a bitwise AND  */
+    /* Replace the pin's corresponding three bits with the desired mode: */
+    /* Set all of the three bits to 0 first, using a bitwise AND */
     fsel &= ~(7 << (3*(pin%10)));
-    /* Now set the three bits to the desired mode using a bitwise OR  */
+    /* Now set the three bits to the desired mode using a bitwise OR */
     fsel |= (mode << (3*(pin%10)));
 
-    /* Write the modified pin mode to GPIO_FSEL in the GPIO register  */
+    /* Write the modified pin mode to GPIO_FSEL in the GPIO register */
     gpio_reg[GPIO_FSEL + pin/10] = fsel;
 }
 
@@ -272,7 +272,7 @@ void gpio_mode(int pin, int mode) {
    IN (0), OUT(1), ALT0 (4), ALT1 (5), ALT2 (6), ALT3 (7), ALT4 (3) or ALT5 (2).
 */
 int gpio_read_mode(int pin) {
-    /* Read three bits from GPIO_FSEL in the GPIO register  */
+    /* Read three bits from GPIO_FSEL in the GPIO register */
     return 7 & (gpio_reg[GPIO_FSEL + pin/10] >> (3*(pin%10)));
 }
 
@@ -280,13 +280,13 @@ int gpio_read_mode(int pin) {
 /*############################################################################*/
 
 
-/* Set output pin level to LOW (0) or HIGH (1).  */
+/* Set output pin level to LOW (0) or HIGH (1). */
 void gpio_write(int pin, int level) {
     if (level) {
-        /* Turn GPIO pin on by writing to GPIO_SET in the GPIO register  */
+        /* Turn GPIO pin on by writing to GPIO_SET in the GPIO register */
         gpio_reg[GPIO_SET + pin/32] = 1 << (pin%32);
     } else {
-        /* Turn GPIO pin off by writing to GPIO_CLR in the GPIO register  */
+        /* Turn GPIO pin off by writing to GPIO_CLR in the GPIO register */
         gpio_reg[GPIO_CLR + pin/32] = 1 << (pin%32);
     }
 }
@@ -295,9 +295,9 @@ void gpio_write(int pin, int level) {
 /*############################################################################*/
 
 
-/* Read the state of an input or output pin as LOW (0) or HIGH (1).  */
+/* Read the state of an input or output pin as LOW (0) or HIGH (1). */
 int gpio_read(int pin) {
-    /* Read one bit from GPIO_LEV in the GPIO register to get the pin state  */
+    /* Read one bit from GPIO_LEV in the GPIO register to get the pin state */
     return 1 & (gpio_reg[GPIO_LEV + pin/32] >> (pin%32));
 }
 
@@ -306,7 +306,7 @@ int gpio_read(int pin) {
 
 
 /* Set DMA channel to use. You can use channel 0, 4, 5 or 6. Default 5.
-   Run this before driver_setup().  */
+   Run this before driver_setup(). */
 void set_dmach(int dmach) {
     dch = dmach;
 }
@@ -315,7 +315,7 @@ void set_dmach(int dmach) {
 /*############################################################################*/
 
 
-/* Get maximum length (in bytes) of cbs_v.  */
+/* Get maximum length (in bytes) of cbs_v. */
 unsigned int cbs_len(void) {
     return 4096*cbs_pages;
 }
@@ -325,28 +325,28 @@ unsigned int cbs_len(void) {
 
 
 /* Start DMA.
-   index: The index of the first DMA control block to load from cbs_v.  */
+   index: The index of the first DMA control block to load from cbs_v. */
 void activate_dma(unsigned int index) {
     /* Make sure DMA channel is enabled by
-       writing the corresponding bit in DMA_ENABLE in the DMA register to 1  */
+       writing the corresponding bit in DMA_ENABLE in the DMA register to 1 */
     dma_reg[DMA_ENABLE] |= 1 << dch;
 
-    /* Stop DMA, if it was already started  */
+    /* Stop DMA, if it was already started */
     dma_reg[DMACH(dch) + DMA_CS] = DMA_CS_RESET;
 
-    /* Clear DMA status flags  */
-    dma_reg[DMACH(dch) + DMA_CS] = DMA_CS_INT |  /* Interrupted flag  */
-                                   DMA_CS_END;   /* Transmission ended flag  */
+    /* Clear DMA status flags */
+    dma_reg[DMACH(dch) + DMA_CS] = DMA_CS_INT |  /* Interrupted flag */
+                                   DMA_CS_END;   /* Transmission ended flag */
 
-    /* Set the bus address of the control block to load  */
+    /* Set the bus address of the control block to load */
     dma_reg[DMACH(dch) + DMA_CONBLK_AD] = (unsigned int)&cbs_b[index];
 
-    /* Clear any DMA errors from previous transmissions  */
+    /* Clear any DMA errors from previous transmissions */
     dma_reg[DMACH(dch) + DMA_DEBUG] = DMA_DEBUG_FIFO_ERROR |
                                       DMA_DEBUG_READ_ERROR |
                                       DMA_DEBUG_READ_NOT_LAST_SET_ERROR;
 
-    /* Set DMA priority to priority 7 (highest 15, lowest 0) and start DMA  */
+    /* Set DMA priority to priority 7 (highest 15, lowest 0) and start DMA */
     dma_reg[DMACH(dch) + DMA_CS] = DMA_CS_PRIORITY(7)                 |
                                    DMA_CS_PANIC_PRIORITY(7)           |
                                    DMA_CS_WAIT_FOR_OUTSTANDING_WRITES |
@@ -357,7 +357,7 @@ void activate_dma(unsigned int index) {
 /*############################################################################*/
 
 
-/* Stop DMA. This is called automatically with driver_cleanup().  */
+/* Stop DMA. This is called automatically with driver_cleanup(). */
 void stop_dma(void) {
     dma_reg[DMACH(dch) + DMA_CS] = DMA_CS_RESET;
 }
@@ -366,7 +366,7 @@ void stop_dma(void) {
 /*############################################################################*/
 
 
-/* Returns 1 if DMA is active, otherwise returns 0.  */
+/* Returns 1 if DMA is active, otherwise returns 0. */
 int dma_running(void) {
     return !!(dma_reg[DMACH(dch) + DMA_CS] & DMA_CS_ACTIVE);
 }
@@ -375,7 +375,7 @@ int dma_running(void) {
 /*############################################################################*/
 
 
-/* Returns the index of the DMA control block currently being output.  */
+/* Returns the index of the DMA control block currently being output. */
 unsigned int dma_current_cb(void) {
     return (dma_reg[DMACH(dch) + DMA_CONBLK_AD] - (int)cbs_b) / sizeof(cb_t);
 }
@@ -401,9 +401,9 @@ unsigned int periph(unsigned int base, unsigned int offset) {
              Each page allows for 128 more control blocks in cbs_v.
              Set this to 0 if you are not planning to use DMA.
              A reminder that one page is 4096 bytes.
-             Try not to allocate more than 4096 pages (16 MiB) of memory.  */
+             Try not to allocate more than 4096 pages (16 MiB) of memory. */
 void driver_setup(unsigned int dmaPages) {
-    /* Map certain parts of the Raspberry Pi's memory to virtual memory.  */
+    /* Map certain parts of the Raspberry Pi's memory to virtual memory. */
     dma_reg   = (unsigned int *)memory_map(DMA_BASE,  1);
     pwm_reg   = (unsigned int *)memory_map(PWM_BASE,  1);
     cm_reg    = (unsigned int *)memory_map(CM_BASE,   1);
@@ -414,70 +414,70 @@ void driver_setup(unsigned int dmaPages) {
     if (dmaPages) {
         cbs_pages = dmaPages;
 
-        /* Stop DMA  */
+        /* Stop DMA */
         stop_dma();
 
-        /* Allocate pages for DMA control blocks  */
+        /* Allocate pages for DMA control blocks */
         dmah = vc_create((void **)&cbs_v, (void **)&cbs_b, cbs_pages);
     }
 
 
 
     /* Now we need to start and configure the PWM clock so that we may
-       use it for accurate DMA delays.  */
+       use it for accurate DMA delays. */
 
 
 
-    /* Disable PWM  */
+    /* Disable PWM */
     pwm_reg[PWM_CTL] &= (~PWM_CTL_PWEN1);
     pwm_reg[PWM_CTL] &= (~PWM_CTL_PWEN2);
 
-    /* Disable the PWM clock by turning off the ENAB bit in CM_PWMCTL  */
+    /* Disable the PWM clock by turning off the ENAB bit in CM_PWMCTL */
     cm_reg[CM_PWMCTL] = CM_PASSWD | (cm_reg[CM_PWMCTL] & (~CM_CTL_ENAB));
 
     /* Wait until the BUSY bit in CM_PWMCTL is off
-      (wait until clock turns off)  */
+      (wait until clock turns off) */
     if (cm_reg[CM_PWMCTL] & CM_CTL_BUSY) {
         do {
             cm_reg[CM_PWMCTL] = CM_PASSWD | CM_CTL_KILL;
         } while (cm_reg[CM_PWMCTL] & CM_CTL_BUSY);
     }
 
-    /* Set clock source to source 6 "PLLD" (constant 500 MHz clock source)  */
+    /* Set clock source to source 6 "PLLD" (constant 500 MHz clock source) */
     cm_reg[CM_PWMCTL] = CM_PASSWD | CM_CTL_SRC(6);
     usleep(10);
 
-    /* Set clock divisor to 50 (500 MHz / 50 = 10 MHz)  */
+    /* Set clock divisor to 50 (500 MHz / 50 = 10 MHz) */
     cm_reg[CM_PWMDIV] = CM_PASSWD | CM_DIV_DIVI(50);
     usleep(10);
 
-    /* Enable clock  */
+    /* Enable clock */
     cm_reg[CM_PWMCTL] |= CM_PASSWD | CM_CTL_ENAB;
 
     /* Wait until the BUSY bit in CM_PWMCTL is on
-      (wait until clock turns on)  */
+      (wait until clock turns on) */
     do {} while ((cm_reg[CM_PWMCTL] & CM_CTL_BUSY) == 0);
 
-    /* Reset PWM  */
-    pwm_reg[PWM_CTL] = 0;   /* Set every bit in PWM_CTL to 0  */
+    /* Reset PWM */
+    pwm_reg[PWM_CTL] = 0;   /* Set every bit in PWM_CTL to 0 */
     usleep(10);
-    pwm_reg[PWM_STA] = -1;  /* Set every bit in PWM_STA to 1  */
+    pwm_reg[PWM_STA] = -1;  /* Set every bit in PWM_STA to 1 */
     usleep(10);
 
     /* Set number of bits to transmit to 10 (10 MHz / 10 = 1 MHz)
-       1 MHz => 1 microsecond delay per 32-bit word written to FIFO  */
+       1 MHz => 1 microsecond delay per 32-bit word written to FIFO */
     pwm_reg[PWM_RNG1] = 10;
     usleep(10);
 
-    /* Enable sending DREQ signal to DMA  */
+    /* Enable sending DREQ signal to DMA */
     pwm_reg[PWM_DMAC] = PWM_DMAC_DREQ(15) | PWM_DMAC_PANIC(15) | PWM_DMAC_ENAB;
     usleep(10);
 
-    /* Clear FIFO  */
+    /* Clear FIFO */
     pwm_reg[PWM_CTL] = PWM_CTL_CLRF1;
     usleep(10);
 
-    /* Enable PWM channel 1, and make it use FIFO  */
+    /* Enable PWM channel 1, and make it use FIFO */
     pwm_reg[PWM_CTL] = PWM_CTL_USEF1 | PWM_CTL_MODE1 | PWM_CTL_PWEN1;
 }
 
@@ -485,17 +485,17 @@ void driver_setup(unsigned int dmaPages) {
 /*############################################################################*/
 
 
-/* Cleanup. Run at end.  */
+/* Cleanup. Run at end. */
 void driver_cleanup(void) {
     if (cbs_pages) {
-        /* Stop DMA  */
+        /* Stop DMA */
         stop_dma();
 
-        /* Release DMA control blocks  */
+        /* Release DMA control blocks */
         vc_destroy(dmah, cbs_v, cbs_pages);
     }
 
-    /* Unmap registers  */
+    /* Unmap registers */
     munmap((void *)dma_reg,  4096);
     munmap((void *)pwm_reg,  4096);
     munmap((void *)cm_reg,   4096);

@@ -1,6 +1,6 @@
 #include "include/player.h"
 
-/* GPIO pins to use (BCM number)  */
+/* GPIO pins to use (BCM number) */
 #define PIN1   21
 #define PIN2   20
 #define PIN3   16

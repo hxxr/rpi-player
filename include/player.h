@@ -18,17 +18,17 @@
  * ***** END GPL LICENSE BLOCK *****
  */
 
-/* player - Helper functions for sound wave generation on GPIO pins  */
+/* player - Helper functions for sound wave generation on GPIO pins */
 
 #pragma once
 
-/* Pages for DMA control blocks.  */
+/* Pages for DMA control blocks. */
 #define PAGES 128
 
 
 
 
-/* Type for miscellaneous player information.  */
+/* Type for miscellaneous player information. */
 typedef struct misc_t {
     double value;  /* Length of note, in beats. (<= 1)                        */
 
@@ -64,25 +64,25 @@ typedef struct misc_t {
    pin:    GPIO pin number (BCM) through which the voice plays.
    freqs:  Array of frequencies (Hz). A zero (0) indicates pin should be off.
    duties: Array of duty cycles (0 to 1, exclusive).
-   misc:   Array of misc_t pointers containing extra data. This may be NULL.  */
+   misc:   Array of misc_t pointers containing extra data. This may be NULL. */
 void queueAdd(int pin, double *freqs, double *duties, misc_t **misc);
 
 /* Play queue. This function also consumes the queue.
    us:    Length of each beat in microseconds (60000000/BPM).
-   beats: Total number of queued beats.  */
+   beats: Total number of queued beats. */
 void queuePlay(unsigned int us, unsigned int beats);
 
 /* Set DMA channel to use. You can use channel 0, 4, 5 or 6. Default 5.
-   Run this before queuePlay().  */
+   Run this before queuePlay(). */
 void set_dmach(int dmach);
 
 
 
 
 /* Frequencies of notes in Hz (a4 = 440, equal temperament).
-   c4 is c natural, while C4 is c sharp.  */
-#define ___    NULL /* Fills in blank spaces in misc arrays  */
-#define __    0.000 /* Fills in blank spaces in freq arrays  */
+   c4 is c natural, while C4 is c sharp. */
+#define ___    NULL /* Fills in blank spaces in misc arrays */
+#define __    0.000 /* Fills in blank spaces in freq arrays */
 #define XX    0.000 /* Indicates somewhere where pitch/dutycycle slide occurs */
 #define c0   16.351
 #define C0   17.324

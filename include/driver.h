@@ -18,11 +18,11 @@
  * ***** END GPL LICENSE BLOCK *****
  */
 
-/* driver - Functions for controlling RPi peripherals and DMA engine  */
+/* driver - Functions for controlling RPi peripherals and DMA engine */
 
 #pragma once
 
-/* Pin modes for gpio_mode() and gpio_read_mode()  */
+/* Pin modes for gpio_mode() and gpio_read_mode() */
 #define IN   0
 #define OUT  1
 #define ALT0 4
@@ -32,26 +32,26 @@
 #define ALT4 3
 #define ALT5 2
 
-/* Pin levels for gpio_write() and gpio_read()  */
+/* Pin levels for gpio_write() and gpio_read() */
 #define LOW  0
 #define HIGH 1
 
-/* These are the physical base memory locations for the various registers.  */
-/* Notice that they differ between different hardware versions of the Pi.  */
+/* These are the physical base memory locations for the various registers. */
+/* Notice that they differ between different hardware versions of the Pi. */
 #ifndef HARDWARE
 #   error \
 "HARDWARE not defined. Please use gcc with the -DHARDWARE=X flag, \
 where X is 1 (for Pi1/Pi0/Compute) or 2 (for Pi2/Pi3)."
 #endif
 #if HARDWARE == 1
-/*  Pi Zero, Pi 1, Compute Module  */
+/*  Pi Zero, Pi 1, Compute Module */
 #   define DMA_BASE   0x20007000
 #   define CM_BASE    0x20101000
 #   define GPIO_BASE  0x20200000
 #   define PWM_BASE   0x2020C000
 #   define MEM_FLAG   0xC
 #else
-/*  Pi 2, Pi 3  */
+/*  Pi 2, Pi 3 */
 #   define DMA_BASE   0x3F007000
 #   define CM_BASE    0x3F101000
 #   define GPIO_BASE  0x3F200000
@@ -62,7 +62,7 @@ where X is 1 (for Pi1/Pi0/Compute) or 2 (for Pi2/Pi3)."
 /* These are the relative offsets for
    various locations of interest within registers.
    For example the base address of GPIO_SET is
-   7 32-bit words (28 bytes) from the base address of the GPIO register.  */
+   7 32-bit words (28 bytes) from the base address of the GPIO register. */
 #define GPIO_FSEL     0        /* GPIO Register, GPIO Function Select         */
 #define GPIO_SET      7        /* GPIO Register, GPIO Pin Output Set          */
 #define GPIO_CLR      10       /* GPIO Register, GPIO Pin Output Clear        */
@@ -85,7 +85,7 @@ where X is 1 (for Pi1/Pi0/Compute) or 2 (for Pi2/Pi3)."
 #define CM_PWMCTL     40       /* CM Register, PWM Clock Control              */
 #define CM_PWMDIV     41       /* CM Register, PWM Clock Divisor              */
 
-/* Commands that may be sent to DMA.                  Field type:  */
+/* Commands that may be sent to DMA.                  Field type: */
 #define DMA_CS_ACTIVE                       (1<<0) /* Read and Write          */
 #define DMA_CS_END                          (1<<1) /* Write 1 to clear        */
 #define DMA_CS_INT                          (1<<2) /* Write 1 to clear        */
@@ -98,7 +98,7 @@ where X is 1 (for Pi1/Pi0/Compute) or 2 (for Pi2/Pi3)."
 #define DMA_DEBUG_FIFO_ERROR                (1<<1) /* Write 1 to clear        */
 #define DMA_DEBUG_READ_ERROR                (1<<2) /* Write 1 to clear        */
 
-/* Commands that may be sent to PWM.        Field type:  */
+/* Commands that may be sent to PWM.        Field type: */
 #define PWM_CTL_PWEN1             (1<<0) /* Read and Write                    */
 #define PWM_CTL_MODE1             (1<<1) /* Read and Write                    */
 #define PWM_CTL_RPTL1             (1<<2) /* Read and Write                    */
@@ -117,19 +117,19 @@ where X is 1 (for Pi1/Pi0/Compute) or 2 (for Pi2/Pi3)."
 #define PWM_DMAC_ENAB            (1<<31) /* Read and Write                    */
 
 /* All writes to the Clock Manager register require bitwise OR with this passwd.
-   The Clock Manager register must be undocumented for a good reason.  */
-                              /* Field type:  */
+   The Clock Manager register must be undocumented for a good reason. */
+                              /* Field type: */
 #define CM_PASSWD    (90<<24) /* Write only                                   */
 
-/* Commands that may be sent to the undocumented Clock Manager register.  */
-                                        /* Field type:  */
+/* Commands that may be sent to the undocumented Clock Manager register. */
+                                        /* Field type: */
 #define CM_CTL_SRC(n)     ((15&(n))<<0) /* Read and Write                     */
 #define CM_CTL_ENAB              (1<<4) /* Read and Write                     */
 #define CM_CTL_KILL              (1<<5) /* Write 1 to activate                */
 #define CM_CTL_BUSY              (1<<7) /* Read only                          */
 #define CM_DIV_DIVI(n) ((4095&(n))<<12) /* Read and Write                     */
 
-/* Commands that may be put inside DMA control blocks.  */
+/* Commands that may be put inside DMA control blocks. */
 #define CB_TDMODE            (1<<1)
 #define CB_WAIT_RESP         (1<<3)
 #define CB_DEST_INC          (1<<4)
@@ -140,7 +140,7 @@ where X is 1 (for Pi1/Pi0/Compute) or 2 (for Pi2/Pi3)."
 #define CB_NO_WIDE_BURSTS   (1<<26)
 #define TIBASE              (CB_NO_WIDE_BURSTS | CB_WAIT_RESP)
 
-/* Type for control blocks.  */
+/* Type for control blocks. */
 typedef struct cb_t {
     unsigned int ti;        /* Transfer Information                           */
     unsigned int source_ad; /* Source Address                                 */
@@ -153,7 +153,7 @@ typedef struct cb_t {
 } cb_t;
 
 /* These pointers provide access to the part of the memory that contains
-   DMA control blocks.  */
+   DMA control blocks. */
 extern cb_t *cbs_v, *cbs_b;
 
 /* Setup. Run before other functions.
@@ -161,15 +161,15 @@ extern cb_t *cbs_v, *cbs_b;
              Each page allows for 128 more control blocks in cbs_v.
              Set this to 0 if you are not planning to use DMA.
              A reminder that one page is 4096 bytes.
-             Try not to allocate more than 4096 pages (16 MiB) of memory.  */
+             Try not to allocate more than 4096 pages (16 MiB) of memory. */
 void driver_setup(unsigned int dmaPages);
 
-/* Cleanup. Run at end.  */
+/* Cleanup. Run at end. */
 void driver_cleanup(void);
 
-/* Set pin mode to IN (0) or OUT (1).  */
-/* You can also set to  */
-/* ALT0 (4), ALT1 (5), ALT2 (6), ALT3 (7), ALT4 (3) or ALT5 (2).  */
+/* Set pin mode to IN (0) or OUT (1). */
+/* You can also set to */
+/* ALT0 (4), ALT1 (5), ALT2 (6), ALT3 (7), ALT4 (3) or ALT5 (2). */
 void gpio_mode(int pin, int mode);
 
 /* Read pin mode as
@@ -177,10 +177,10 @@ void gpio_mode(int pin, int mode);
 */
 int gpio_read_mode(int pin);
 
-/* Set output pin level to LOW (0) or HIGH (1).  */
+/* Set output pin level to LOW (0) or HIGH (1). */
 void gpio_write(int pin, int level);
 
-/* Read the state of an input or output pin as LOW (0) or HIGH (1).  */
+/* Read the state of an input or output pin as LOW (0) or HIGH (1). */
 int gpio_read(int pin);
 
 /* Allocate GPU memory using mailbox interface, so that it is completely
@@ -211,23 +211,23 @@ unsigned int vc_create(void **virtAddr, void **busAddr, unsigned int pages);
 void vc_destroy(unsigned int handle, void *virtAddr, unsigned int pages);
 
 /* Set DMA channel to use. You can use channel 0, 4, 5 or 6. Default 5.
-   Run this before driver_setup().  */
+   Run this before driver_setup(). */
 void set_dmach(int dmach);
 
-/* Get maximum length (in bytes) of cbs_v.  */
+/* Get maximum length (in bytes) of cbs_v. */
 unsigned int cbs_len(void);
 
 /* Start DMA.
-   index: The index of the first DMA control block to load from cbs_v.  */
+   index: The index of the first DMA control block to load from cbs_v. */
 void activate_dma(unsigned int index);
 
-/* Stop DMA. This is called automatically with driver_cleanup().  */
+/* Stop DMA. This is called automatically with driver_cleanup(). */
 void stop_dma(void);
 
-/* Returns 1 if DMA is active, otherwise returns 0.  */
+/* Returns 1 if DMA is active, otherwise returns 0. */
 int dma_running(void);
 
-/* Returns the index of the DMA control block currently being output.  */
+/* Returns the index of the DMA control block currently being output. */
 unsigned int dma_current_cb(void);
 
 /* Get the physical address of a peripheral register location, for DMA purposes.
