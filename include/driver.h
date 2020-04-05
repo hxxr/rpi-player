@@ -41,23 +41,24 @@
 #ifndef HARDWARE
 #   error \
 "HARDWARE not defined. Please use gcc with the -DHARDWARE=X flag, \
-where X is 1 (for Pi1/Pi0/Compute) or 2 (for Pi2/Pi3)."
+where X is 1 (for Pi1/Pi0) or 2 (for Pi2/Pi3) or 3 (for Pi4)."
 #endif
 #if HARDWARE == 1
-/*  Pi Zero, Pi 1, Compute Module */
-#   define DMA_BASE   0x20007000
-#   define CM_BASE    0x20101000
-#   define GPIO_BASE  0x20200000
-#   define PWM_BASE   0x2020C000
+/*  Pi Zero, Pi 1 */
+#   define PHYS       0x20000000
 #   define MEM_FLAG   0xC
-#else
+#elif HARDWARE == 2
 /*  Pi 2, Pi 3 */
-#   define DMA_BASE   0x3F007000
-#   define CM_BASE    0x3F101000
-#   define GPIO_BASE  0x3F200000
-#   define PWM_BASE   0x3F20C000
+#   define PHYS       0x3F000000
+#   define MEM_FLAG   0x4
+#else
+#   define PHYS       0xFE000000
 #   define MEM_FLAG   0x4
 #endif
+#define DMA_BASE   (PHYS | 0x00007000)
+#define CM_BASE    (PHYS | 0x00101000)
+#define GPIO_BASE  (PHYS | 0x00200000)
+#define PWM_BASE   (PHYS | 0x0020C000)
 
 /* These are the relative offsets for
    various locations of interest within registers.

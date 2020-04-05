@@ -54,6 +54,7 @@ make pi0    # Raspberry Pi Zero or Zero W
 make pi1    # Raspberry Pi 1
 make pi2    # Raspberry Pi 2
 make pi3    # Raspberry Pi 3
+make pi4    # Raspberry Pi 4
 ```
 **Please note: I only have a Raspberry Pi 2, so I cannot guarantee the programs will function on the other hardware revisions. However I have reason to believe they will function.**
 
@@ -205,6 +206,7 @@ The program is now complete. To compile this program:
     make pi1    # Raspberry Pi 1
     make pi2    # Raspberry Pi 2
     make pi3    # Raspberry Pi 3
+    make pi3    # Raspberry Pi 4
     ```
 
 ### Addendum 1: Usage of miscellaneous effects (pitch slide, vibrato, etc...)

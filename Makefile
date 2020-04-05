@@ -9,6 +9,7 @@ all default:
 	$(info pi1              ~    Build for Raspberry Pi 1)
 	$(info pi2              ~    Build for Raspberry Pi 2)
 	$(info pi3              ~    Build for Raspberry Pi 3)
+	$(info pi4              ~    Build for Raspberry Pi 4)
 	$(info clean            ~    Remove built files, leaving only source code)
 	$(info )
 	$(error Target not specified)
@@ -19,7 +20,8 @@ SRC = $(wildcard *.c)
 INCLUDES = include/driver.o include/player.o
 pi0 pi1: DEFINES = -DHARDWARE=1
 pi2 pi3: DEFINES = -DHARDWARE=2
-pi0 pi1 pi2 pi3: $(SRC:.c=)
+pi4:     DEFINES = -DHARDWARE=3
+pi0 pi1 pi2 pi3 pi4: $(SRC:.c=)
 $(SRC:.c=): % : $(INCLUDES) $(addsuffix .o,$(basename %))
 	@printf "\033[1;33m[\033[1;35mLINKING\033[1;36m"
 	@printf "     include/driver.o \033[1;37m+\033[1;36m include/player.o"
